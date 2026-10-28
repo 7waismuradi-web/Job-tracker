@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add application - JobTrack</title>
+</head>
+<body>
+    <h1>Add an application</h1>
+
+    <form method="post">
+        <p>
+            <label for="company">Company</label><br>
+            <input name="company" id="company" required>
+        </p>
+        <p>
+            <label for="role">Role</label><br>
+            <input name="role" id="role" required>
+        </p>
+        <p>
+            <label for="link">Link to advert</label><br>
+            <input type="url" name="link" id="link">
+        </p>
+        <p>
+            <label for="status">Status</label><br>
+            <select name="status" id="status">
+                <option>Applied</option>
+                <option>Interview</option>
+                <option>Offer</option>
+                <option>Rejected</option>
+            </select>
+        </p>
+        <p>
+            <label for="date_applied">Date applied</label><br>
+            <input type="date" name="date_applied" id="date_applied" required>
+        </p>
+        <p>
+            <label for="follow_up_date">Follow up date</label><br>
+            <input type="date" name="follow_up_date" id="follow_up_date">
+        </p>
+        <p>
+            <label for="notes">Notes</label><br>
+            <textarea name="notes" id="notes" rows="4"></textarea>
+        </p>
+        <p>
+            <button type="submit">Save</button>
+        </p>
+    </form>
+
+    <p><a href="{{ url_for('index') }}">Back to list</a></p>
+</body>
+</html>

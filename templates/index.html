@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JobTrack</title>
+</head>
+<body>
+    <h1>My Applications</h1>
+        <p><a href="{{ url_for('add') }}">Add an application</a></p>
+
+    {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Applied</th>
+                    <th>Follow up</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                    <tr>
+                        <td>{{ app["company"] }}</td>
+                        <td>{{ app["role"] }}</td>
+                        <td>{{ app["status"] }}</td>
+                        <td>{{ app["date_applied"] }}</td>
+                        <td>{{ app["follow_up_date"] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No applications yet.</p>
+    {% endif %}
+</body>
+</html>
+    @app.route("/add", methods=("GET", "POST"))
+    def add():
+        if request.method == "POST":
+            conn = db.get_db()
+            conn.execute(
+                "INSERT INTO applications"
+                " (user_id, company, role, link, status, date_applied,"
+                " follow_up_date, notes)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    1,
+                    request.form["company"],
+                    request.form["role"],
+                    request.form["link"],
+                    request.form["status"],
+                    request.form["date_applied"],
+                    request.form["follow_up_date"] or None,
+                    request.form["notes"],
+                ),
+            )
+            conn.commit()
+            return redirect(url_for("index"))
+
+        return render_template("add.html")
