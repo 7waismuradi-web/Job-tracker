@@ -54,7 +54,18 @@
                             </td>
                             <td data-label="Applied">{{ app["date_applied"] }}</td>
                             <td data-label="Follow up">
-                                {{ app["follow_up_date"] or "—" }}
+                                {% if app["follow_up_date"] %}
+                                    {% if app["follow_up_date"] < today
+                                          and app["status"] in ["Applied", "Interview"] %}
+                                        <span class="overdue">
+                                            {{ app["follow_up_date"] }} · overdue
+                                        </span>
+                                    {% else %}
+                                        {{ app["follow_up_date"] }}
+                                    {% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
                             </td>
                             <td data-label="" class="actions">
                                 <a class="action action-edit"

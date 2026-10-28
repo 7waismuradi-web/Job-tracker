@@ -1,3 +1,4 @@
+from datetime import date
 import os
 
 from flask import Flask, abort, redirect, render_template, request, url_for
@@ -46,6 +47,7 @@ def create_app():
             counts=counts,
             total=sum(counts.values()),
             current_status=status,
+            today=date.today().isoformat(),
         )
 
     @app.route("/add", methods=("GET", "POST"))

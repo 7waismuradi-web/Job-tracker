@@ -231,3 +231,8 @@ tbody tr {
 tbody tr:hover {
     background: #fafafa;
 }
+
+.overdue {
+    color: var(--rejected);
+    font-weight: 500;
+}
