@@ -21,3 +21,5 @@ CREATE TABLE applications (
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
+INSERT INTO users (id, email, password_hash)
+VALUES (1, 'placeholder@jobtrack.local', 'not-a-real-password');

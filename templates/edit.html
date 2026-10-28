@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit application - JobTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Edit application</h1>
+
+        <form method="post">
+            <div class="field">
+                <label for="company">Company</label>
+                <input name="company" id="company"
+                       value="{{ application['company'] }}" required>
+            </div>
+            <div class="field">
+                <label for="role">Role</label>
+                <input name="role" id="role"
+                       value="{{ application['role'] }}" required>
+            </div>
+            <div class="field">
+                <label for="link">Link to advert</label>
+                <input type="url" name="link" id="link"
+                       value="{{ application['link'] or '' }}">
+            </div>
+            <div class="field">
+                <label for="status">Status</label>
+                <select name="status" id="status">
+                    {% for s in ["Applied", "Interview", "Offer", "Rejected"] %}
+                        <option {% if application['status'] == s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label for="date_applied">Date applied</label>
+                <input type="date" name="date_applied" id="date_applied"
+                       value="{{ application['date_applied'] }}" required>
+            </div>
+            <div class="field">
+                <label for="follow_up_date">Follow up date</label>
+                <input type="date" name="follow_up_date" id="follow_up_date"
+                       value="{{ application['follow_up_date'] or '' }}">
+            </div>
+            <div class="field">
+                <label for="notes">Notes</label>
+                <textarea name="notes" id="notes" rows="4">{{ application['notes'] or '' }}</textarea>
+            </div>
+
+            <button class="button" type="submit">Save changes</button>
+            <a href="{{ url_for('index') }}">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

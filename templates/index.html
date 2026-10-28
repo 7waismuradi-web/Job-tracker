@@ -2,61 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JobTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>My Applications</h1>
-        <p><a href="{{ url_for('add') }}">Add an application</a></p>
+    <div class="container">
+        <header class="header">
+            <h1>My applications</h1>
+            <a class="button" href="{{ url_for('add') }}">Add application</a>
+        </header>
 
-    {% if applications %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Company</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Applied</th>
-                    <th>Follow up</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for app in applications %}
+        <p class="counts">
+            {{ total }} total ·
+            {{ counts.get("Applied", 0) }} applied ·
+            {{ counts.get("Interview", 0) }} interviews ·
+            {{ counts.get("Offer", 0) }} offers ·
+            {{ counts.get("Rejected", 0) }} rejected
+        </p>
+
+        <nav class="filters">
+            <a href="{{ url_for('index') }}"
+               class="filter {% if not current_status %}filter-active{% endif %}">All</a>
+            {% for s in ["Applied", "Interview", "Offer", "Rejected"] %}
+                <a href="{{ url_for('index', status=s) }}"
+                   class="filter {% if current_status == s %}filter-active{% endif %}">{{ s }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if applications %}
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ app["company"] }}</td>
-                        <td>{{ app["role"] }}</td>
-                        <td>{{ app["status"] }}</td>
-                        <td>{{ app["date_applied"] }}</td>
-                        <td>{{ app["follow_up_date"] }}</td>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Follow up</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No applications yet.</p>
-    {% endif %}
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td data-label="Company">{{ app["company"] }}</td>
+                            <td data-label="Role">{{ app["role"] }}</td>
+                            <td data-label="Status">
+                                <span class="status status-{{ app['status']|lower }}">
+                                    {{ app["status"] }}
+                                </span>
+                            </td>
+                            <td data-label="Applied">{{ app["date_applied"] }}</td>
+                            <td data-label="Follow up">
+                                {{ app["follow_up_date"] or "—" }}
+                            </td>
+                            <td data-label="" class="actions">
+                                <a class="action action-edit"
+                                   href="{{ url_for('edit', id=app['id']) }}"
+                                   aria-label="Edit application">Edit</a>
+                                <form method="post"
+                                      action="{{ url_for('delete', id=app['id']) }}"
+                                      onsubmit="return confirm('Delete this application?')">
+                                    <button type="submit"
+                                            class="action action-delete"
+                                            aria-label="Delete application">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty">No applications yet. Add your first one.</p>
+        {% endif %}
+    </div>
 </body>
 </html>
-    @app.route("/add", methods=("GET", "POST"))
-    def add():
-        if request.method == "POST":
-            conn = db.get_db()
-            conn.execute(
-                "INSERT INTO applications"
-                " (user_id, company, role, link, status, date_applied,"
-                " follow_up_date, notes)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    1,
-                    request.form["company"],
-                    request.form["role"],
-                    request.form["link"],
-                    request.form["status"],
-                    request.form["date_applied"],
-                    request.form["follow_up_date"] or None,
-                    request.form["notes"],
-                ),
-            )
-            conn.commit()
-            return redirect(url_for("index"))
-
-        return render_template("add.html")
