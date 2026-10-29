@@ -5,6 +5,7 @@ from flask import Flask, abort, g, redirect, render_template, request, url_for
 
 import auth
 import db
+import profile
 from auth import login_required
 
 
@@ -14,12 +15,16 @@ def create_app():
     app.config.from_mapping(
         SECRET_KEY="dev",
         DATABASE=os.path.join(app.instance_path, "jobtrack.sqlite"),
+        UPLOAD_FOLDER=os.path.join(app.instance_path, "cvs"),
+        MAX_CONTENT_LENGTH=5 * 1024 * 1024,
     )
 
     os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(profile.bp)
 
     @app.route("/")
     @login_required

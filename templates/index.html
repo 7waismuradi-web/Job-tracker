@@ -11,8 +11,8 @@
         <div class="topbar-inner">
             <span class="brand">JobTrack</span>
             {% if g.user %}
-                <span class="topbar-user">
-                    {{ g.user["email"] }}
+                              <span class="topbar-user">
+                    <a href="{{ url_for('profile.index') }}">Profile</a>
                     <a href="{{ url_for('auth.logout') }}">Log out</a>
                 </span>
             {% endif %}
