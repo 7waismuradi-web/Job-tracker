@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile - JobTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="{{ url_for('index') }}">JobTrack</a>
+            {% if g.user %}
+                <span class="topbar-user">
+                    {{ g.user["email"] }}
+                    <a href="{{ url_for('auth.logout') }}">Log out</a>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container container-narrow">
+        <h1>Your profile</h1>
+
+        {% for message in get_flashed_messages() %}
+            <p class="flash flash-ok">{{ message }}</p>
+        {% endfor %}
+
+        <section class="card">
+            <h2>CV</h2>
+            {% if g.user["cv_filename"] %}
+                <p class="muted-text">
+                    A CV is on file.
+                    <a href="{{ url_for('profile.download_cv') }}">Download</a>
+                </p>
+            {% else %}
+                <p class="muted-text">No CV uploaded yet.</p>
+            {% endif %}
+
+            <form method="post"
+                  action="{{ url_for('profile.upload_cv') }}"
+                  enctype="multipart/form-data">
+                <div class="field">
+                    <label for="cv">
+                        {% if g.user["cv_filename"] %}Replace CV{% else %}Upload CV{% endif %}
+                    </label>
+                    <input type="file" name="cv" id="cv" accept=".pdf,.docx" required>
+                    <p class="hint">PDF or Word document, up to 5MB.</p>
+                </div>
+                <button class="button" type="submit">Upload</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Details</h2>
+            <form method="post">
+                <div class="field">
+                    <label for="name">Full name</label>
+                    <input name="name" id="name"
+                           value="{{ g.user['name'] }}" required>
+                </div>
+                <div class="field">
+                    <label for="course">Course <span class="optional">optional</span></label>
+                    <input name="course" id="course"
+                           value="{{ g.user['course'] or '' }}">
+                </div>
+                <div class="field">
+                    <label for="year_of_study">Year of study <span class="optional">optional</span></label>
+                    <select name="year_of_study" id="year_of_study">
+                        <option value="">Select…</option>
+                        {% for y in [1, 2, 3, 4] %}
+                            <option value="{{ y }}"
+                                {% if g.user["year_of_study"] == y %}selected{% endif %}>
+                                Year {{ y }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="phone">Phone <span class="optional">optional</span></label>
+                    <input type="tel" name="phone" id="phone"
+                           value="{{ g.user['phone'] or '' }}">
+                </div>
+                <div class="field">
+                    <label for="address">Address <span class="optional">optional</span></label>
+                    <textarea name="address" id="address" rows="3">{{ g.user['address'] or '' }}</textarea>
+                </div>
+                <button class="button" type="submit">Save changes</button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
