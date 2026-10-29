@@ -9,9 +9,9 @@
 <body>
     <div class="topbar">
         <div class="topbar-inner">
-            <span class="brand">JobTrack</span>
+            <a class="brand" href="{{ url_for('index') }}">JobTrack</a>
             {% if g.user %}
-                              <span class="topbar-user">
+                <span class="topbar-user">
                     <a href="{{ url_for('profile.index') }}">Profile</a>
                     <a href="{{ url_for('auth.logout') }}">Log out</a>
                 </span>
@@ -19,20 +19,38 @@
         </div>
     </div>
 
+    <div class="hero">
+        <div class="hero-inner">
+            <div class="header">
+                <div>
+                    <h1>My applications</h1>
+                    <p class="counts">{{ total }} tracked</p>
+                </div>
+                <a class="button" href="{{ url_for('add') }}">Add application</a>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Applied</div>
+                    <div class="stat-value">{{ counts.get("Applied", 0) }}</div>
+                </div>
+                <div class="stat stat-interview">
+                    <div class="stat-label">Interviews</div>
+                    <div class="stat-value">{{ counts.get("Interview", 0) }}</div>
+                </div>
+                <div class="stat stat-offer">
+                    <div class="stat-label">Offers</div>
+                    <div class="stat-value">{{ counts.get("Offer", 0) }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Rejected</div>
+                    <div class="stat-value">{{ counts.get("Rejected", 0) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <header class="header">
-            <h1>My applications</h1>
-            <a class="button" href="{{ url_for('add') }}">Add application</a>
-        </header>
-
-        <p class="counts">
-            {{ total }} total ·
-            {{ counts.get("Applied", 0) }} applied ·
-            {{ counts.get("Interview", 0) }} interviews ·
-            {{ counts.get("Offer", 0) }} offers ·
-            {{ counts.get("Rejected", 0) }} rejected
-        </p>
-
         <nav class="filters">
             <a href="{{ url_for('index') }}"
                class="filter {% if not current_status %}filter-active{% endif %}">All</a>
