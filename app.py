@@ -1,9 +1,11 @@
 from datetime import date
 import os
 
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, g, redirect, render_template, request, url_for
 
+import auth
 import db
+from auth import login_required
 
 
 def create_app():
@@ -17,27 +19,33 @@ def create_app():
     os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
+    app.register_blueprint(auth.bp)
 
     @app.route("/")
+    @login_required
     def index():
         conn = db.get_db()
 
         status = request.args.get("status")
         if status in ("Applied", "Interview", "Offer", "Rejected"):
             applications = conn.execute(
-                "SELECT * FROM applications WHERE status = ?"
+                "SELECT * FROM applications WHERE user_id = ? AND status = ?"
                 " ORDER BY date_applied DESC",
-                (status,),
+                (g.user["id"], status),
             ).fetchall()
         else:
             status = None
             applications = conn.execute(
-                "SELECT * FROM applications ORDER BY date_applied DESC"
+                "SELECT * FROM applications WHERE user_id = ?"
+                " ORDER BY date_applied DESC",
+                (g.user["id"],),
             ).fetchall()
 
         counts = {}
         for row in conn.execute(
-            "SELECT status, COUNT(*) AS n FROM applications GROUP BY status"
+            "SELECT status, COUNT(*) AS n FROM applications"
+            " WHERE user_id = ? GROUP BY status",
+            (g.user["id"],),
         ).fetchall():
             counts[row["status"]] = row["n"]
 
@@ -51,6 +59,7 @@ def create_app():
         )
 
     @app.route("/add", methods=("GET", "POST"))
+    @login_required
     def add():
         if request.method == "POST":
             conn = db.get_db()
@@ -60,7 +69,7 @@ def create_app():
                 " follow_up_date, notes)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    1,
+                    g.user["id"],
                     request.form["company"],
                     request.form["role"],
                     request.form["link"],
@@ -76,10 +85,12 @@ def create_app():
         return render_template("add.html")
 
     @app.route("/<int:id>/edit", methods=("GET", "POST"))
+    @login_required
     def edit(id):
         conn = db.get_db()
         application = conn.execute(
-            "SELECT * FROM applications WHERE id = ?", (id,)
+            "SELECT * FROM applications WHERE id = ? AND user_id = ?",
+            (id, g.user["id"]),
         ).fetchone()
 
         if application is None:
@@ -89,7 +100,7 @@ def create_app():
             conn.execute(
                 "UPDATE applications SET company = ?, role = ?, link = ?,"
                 " status = ?, date_applied = ?, follow_up_date = ?, notes = ?"
-                " WHERE id = ?",
+                " WHERE id = ? AND user_id = ?",
                 (
                     request.form["company"],
                     request.form["role"],
@@ -99,6 +110,7 @@ def create_app():
                     request.form["follow_up_date"] or None,
                     request.form["notes"],
                     id,
+                    g.user["id"],
                 ),
             )
             conn.commit()
@@ -107,16 +119,21 @@ def create_app():
         return render_template("edit.html", application=application)
 
     @app.route("/<int:id>/delete", methods=("POST",))
+    @login_required
     def delete(id):
         conn = db.get_db()
         application = conn.execute(
-            "SELECT * FROM applications WHERE id = ?", (id,)
+            "SELECT * FROM applications WHERE id = ? AND user_id = ?",
+            (id, g.user["id"]),
         ).fetchone()
 
         if application is None:
             abort(404)
 
-        conn.execute("DELETE FROM applications WHERE id = ?", (id,))
+        conn.execute(
+            "DELETE FROM applications WHERE id = ? AND user_id = ?",
+            (id, g.user["id"]),
+        )
         conn.commit()
         return redirect(url_for("index"))
 

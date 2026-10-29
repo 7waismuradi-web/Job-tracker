@@ -236,3 +236,22 @@ tbody tr:hover {
     color: var(--rejected);
     font-weight: 500;
 }
+
+.container-narrow {
+    max-width: 400px;
+}
+
+.flash {
+    padding: 0.75rem 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: var(--rejected);
+    font-size: 0.9rem;
+}
+
+.muted-link {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+}

@@ -4,7 +4,14 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    name TEXT NOT NULL,
+    course TEXT,
+    year_of_study INTEGER,
+    phone TEXT,
+    address TEXT,
+    cv_filename TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE applications (
@@ -21,5 +28,3 @@ CREATE TABLE applications (
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
-INSERT INTO users (id, email, password_hash)
-VALUES (1, 'placeholder@jobtrack.local', 'not-a-real-password');

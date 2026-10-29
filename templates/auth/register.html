@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register - JobTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container container-narrow">
+        <h1>Create an account</h1>
+
+        {% for message in get_flashed_messages() %}
+            <p class="flash">{{ message }}</p>
+        {% endfor %}
+
+        <form method="post">
+            <div class="field">
+                <label for="name">Full name</label>
+                <input name="name" id="name" required>
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password"
+                       minlength="8" required>
+                <p class="hint">At least 8 characters.</p>
+            </div>
+            <div class="field">
+                <label for="course">Course <span class="optional">optional</span></label>
+                <input name="course" id="course"
+                       placeholder="BSc Software Engineering">
+            </div>
+            <div class="field">
+                <label for="year_of_study">Year of study <span class="optional">optional</span></label>
+                <select name="year_of_study" id="year_of_study">
+                    <option value="">Select…</option>
+                    <option value="1">Year 1</option>
+                    <option value="2">Year 2</option>
+                    <option value="3">Year 3</option>
+                    <option value="4">Year 4</option>
+                </select>
+            </div>
+            <button class="button" type="submit">Create account</button>
+        </form>
+
+        <p class="muted-link">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}">Log in</a>
+        </p>
+    </div>
+</body>
+</html>
