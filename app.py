@@ -18,7 +18,8 @@ def create_app():
         UPLOAD_FOLDER=os.path.join(app.instance_path, "cvs"),
         MAX_CONTENT_LENGTH=5 * 1024 * 1024,
     )
-
+    app.config.from_pyfile("config.py", silent=True)
+    
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
